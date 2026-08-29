@@ -5,19 +5,21 @@ import json
 import time
 import cv2
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from ultralytics import YOLO
 
 app = FastAPI()
 
-# 🔥 정적 파일(CSS, JS, 이미지 등) 제공을 위한 static 디렉터리 마운트
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# 1. 모델 로드
 model = YOLO("yolo11n.pt")
 
-# 2. COCO 80개 사물 전체 이모지 매핑
 COCO_EMOJI_MAP = {
     "person": "👤", "bicycle": "🚲", "car": "🚗", "motorcycle": "🏍️",
     "airplane": "✈️", "bus": "🚌", "train": "🚆", "truck": "🚚", "boat": "🛥️",
@@ -44,11 +46,6 @@ COCO_EMOJI_MAP = {
 
 active_websockets: list[WebSocket] = []
 main_loop = None
-
-@app.get("/", response_class=HTMLResponse)
-async def get_dashboard():
-    with open("templates/index.html", "r", encoding="utf-8") as f:
-        return f.read()
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -82,7 +79,7 @@ def camera_loop():
     print("🚀 캠모지 카메라 시작 (카메라 창에서 'q' 누르면 프로그램 완전 종료)")
     
     last_update_time = time.time()
-    UPDATE_INTERVAL = 1.0
+    UPDATE_INTERVAL = 1.0  # 업데이트 주기 변수
 
     while True:
         ret, frame = cap.read()
