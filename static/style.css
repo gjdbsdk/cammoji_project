@@ -1,0 +1,305 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: #0b0f19;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 2.2rem;
+  margin-bottom: 6px;
+  background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.status {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.status.connected {
+  color: #4ade80;
+}
+
+.container {
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* 🎭 버추얼 아바타 스테이지 */
+.stage-card {
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  border-radius: 24px;
+  height: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border: 2px solid #334155;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.stage-title {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.scene-action-text {
+  position: absolute;
+  bottom: 16px;
+  font-size: 1rem;
+  color: #38bdf8;
+  font-weight: 500;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #334155;
+}
+
+/* 🎯 정밀 레이어링 아바타 씬 */
+.avatar-scene {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: breathe 3.5s ease-in-out infinite;
+}
+
+/* [Layer 2] 사람 본체 */
+.person-body {
+  font-size: 8rem;
+  line-height: 1;
+  z-index: 2;
+  position: relative;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+/* [Layer 1] 사람 뒤쪽 오브젝트 (의자, 침대, 우산 등) */
+.obj-back-chair {
+  position: absolute;
+  font-size: 9rem;
+  top: -20px;
+  left: 5px;
+  z-index: 1;
+  opacity: 0.95;
+}
+
+.obj-back-bed {
+  position: absolute;
+  font-size: 8.5rem;
+  bottom: -30px;
+  z-index: 1;
+}
+
+.obj-back-umbrella {
+  position: absolute;
+  font-size: 6rem;
+  top: -55px;
+  left: 30px;
+  z-index: 1;
+  transform: rotate(-10deg);
+}
+
+/* [Layer 3] 사람 앞쪽 오브젝트 (컵, 스마트폰, 노트북, 음식 등) */
+.obj-front-cup {
+  position: absolute;
+  font-size: 4.2rem;
+  bottom: -5px;
+  left: 10px;
+  z-index: 3;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  animation: floatLeft 2s ease-in-out infinite;
+}
+
+.obj-front-phone {
+  position: absolute;
+  font-size: 3.8rem;
+  bottom: 10px;
+  right: 15px;
+  z-index: 3;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  animation: floatRight 2s ease-in-out infinite;
+}
+
+.obj-front-laptop {
+  position: absolute;
+  font-size: 5rem;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+}
+
+.obj-front-book {
+  position: absolute;
+  font-size: 4rem;
+  bottom: -5px;
+  right: 20px;
+  z-index: 3;
+}
+
+.obj-front-food {
+  position: absolute;
+  font-size: 4rem;
+  bottom: -10px;
+  left: 20px;
+  z-index: 3;
+}
+
+.obj-side-pet {
+  position: absolute;
+  font-size: 4.5rem;
+  bottom: -15px;
+  right: -45px;
+  z-index: 3;
+  animation: bouncePet 1.6s ease-in-out infinite;
+}
+
+/* 단독 사물 모드 */
+.solo-item {
+  font-size: 7.5rem;
+  animation: popIn 0.3s ease-out;
+}
+
+/* 하단 카드 UI */
+.card {
+  background-color: #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #334155;
+}
+
+.card-header {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+#detected-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 40px;
+  align-items: center;
+}
+
+.badge {
+  background: #334155;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  border: 1px solid #475569;
+}
+
+.empty-text {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* 📋 감지 히스토리 로그 박스 */
+#log-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.log-item {
+  background: #0f172a;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #94a3b8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #1e293b;
+  animation: popIn 0.2s ease-out;
+}
+
+.log-time {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+/* 애니메이션 */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes floatLeft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-4deg);
+  }
+}
+
+@keyframes floatRight {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px) rotate(4deg);
+  }
+}
+
+@keyframes bouncePet {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
