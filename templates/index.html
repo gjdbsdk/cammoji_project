@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cammoji - Virtual Avatar</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <h1>✨ Cammoji Virtual Stage</h1>
+    <div id="connection-status" class="status">서버 연결 대기 중...</div>
+
+    <div class="container">
+      <!-- 🎭 버추얼 아바타 스테이지 영역 -->
+      <div class="stage-card">
+        <div class="stage-title">Virtual Live Scene</div>
+        <div id="avatar-stage" class="avatar-scene">
+          <div class="person-body" style="opacity: 0.4">🫥</div>
+        </div>
+        <div id="scene-desc" class="scene-action-text">
+          카메라에 사물을 비춰보세요
+        </div>
+      </div>
+
+      <!-- 실시간 감지 목록 -->
+      <div class="card">
+        <div class="card-header">🔍 현재 감지된 사물</div>
+        <div id="detected-badges">
+          <span class="empty-text">인식된 사물이 없습니다.</span>
+        </div>
+      </div>
+
+      <!-- 📋 감지 히스토리 로그 박스 -->
+      <div class="card">
+        <div class="card-header">📋 감지 히스토리 로그</div>
+        <div id="log-box"></div>
+      </div>
+    </div>
+
+    <script>
+      const statusEl = document.getElementById("connection-status");
+      const stageEl = document.getElementById("avatar-stage");
+      const sceneDescEl = document.getElementById("scene-desc");
+      const badgesEl = document.getElementById("detected-badges");
+      const logBox = document.getElementById("log-box");
+
+      // 이모지 사전
+      const EMOJI_MAP = {
+        person: "👤",
+        bicycle: "🚲",
+        car: "🚗",
+        motorcycle: "🏍️",
+        airplane: "✈️",
+        bus: "🚌",
+        train: "🚆",
+        truck: "🚚",
+        boat: "🛥️",
+        "traffic light": "🚦",
+        "fire hydrant": "🧯",
+        "stop sign": "🛑",
+        "parking meter": "🅿️",
+        bench: "🪑",
+        bird: "🐦",
+        cat: "🐱",
+        dog: "🐶",
+        horse: "🐴",
+        sheep: "🐑",
+        cow: "🐮",
+        elephant: "🐘",
+        bear: "🐻",
+        zebra: "🦓",
+        giraffe: "🦒",
+        backpack: "🎒",
+        umbrella: "☂️",
+        handbag: "👜",
+        tie: "👔",
+        suitcase: "🧳",
+        frisbee: "🥏",
+        skis: "🎿",
+        snowboard: "🏂",
+        "sports ball": "⚽",
+        kite: "🪁",
+        "baseball bat": "🏏",
+        "baseball glove": "🧤",
+        skateboard: "🛹",
+        surfboard: "🏄",
+        "tennis racket": "🎾",
+        bottle: "🍾",
+        "wine glass": "🍷",
+        cup: "☕",
+        fork: "🍴",
+        knife: "🔪",
+        spoon: "🥄",
+        bowl: "🥣",
+        banana: "🍌",
+        apple: "🍎",
+        sandwich: "🥪",
+        orange: "🍊",
+        broccoli: "🥦",
+        carrot: "🥕",
+        "hot dog": "🌭",
+        pizza: "🍕",
+        donut: "🍩",
+        cake: "🎂",
+        chair: "🪑",
+        couch: "🛋️",
+        "potted plant": "🪴",
+        bed: "🛏️",
+        "dining table": "🍽️",
+        toilet: "🚽",
+        tv: "📺",
+        laptop: "💻",
+        mouse: "🖱️",
+        remote: "📱",
+        keyboard: "⌨️",
+        "cell phone": "📱",
+        microwave: "📻",
+        oven: "🍳",
+        toaster: "🍞",
+        sink: "🚰",
+        refrigerator: "🧊",
+        book: "📖",
+        clock: "⏰",
+        vase: "🏺",
+        scissors: "✂️",
+        "teddy bear": "🧸",
+        "hair drier": "💨",
+        toothbrush: "🪥",
+      };
+
+      const ws = new WebSocket(`ws://${location.host}/ws`);
+
+      ws.onopen = () => {
+        statusEl.textContent = "🟢 버추얼 라이브 연동 중 (카메라 작동 중)";
+        statusEl.className = "status connected";
+      };
+
+      ws.onclose = () => {
+        statusEl.textContent = "🔴 연결 종료됨";
+        statusEl.className = "status";
+      };
+
+      let lastHistoryKey = "";
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const classes = data.classes || [];
+        const emojis = data.emojis || [];
+
+        // 1. 하단 배지 렌더링
+        if (emojis.length === 0) {
+          badgesEl.innerHTML =
+            '<span class="empty-text">인식된 사물이 없습니다.</span>';
+        } else {
+          badgesEl.innerHTML = emojis
+            .map((e) => `<span class="badge">${e}</span>`)
+            .join("");
+        }
+
+        // 2. 버추얼 아바타 씬 레이어 합성
+        renderAvatarScene(classes, emojis);
+
+        // 3. 히스토리 로그 기록
+        const currentHistoryKey = classes.slice().sort().join(",");
+        if (classes.length > 0 && currentHistoryKey !== lastHistoryKey) {
+          lastHistoryKey = currentHistoryKey;
+          const now = new Date();
+          const timeStr = now.toLocaleTimeString();
+
+          const logItem = document.createElement("div");
+          logItem.className = "log-item";
+          logItem.innerHTML = `
+                    <span>${emojis.join("  ")}</span>
+                    <span class="log-time">${timeStr}</span>
+                `;
+          logBox.prepend(logItem);
+        }
+      };
+
+      function renderAvatarScene(classes, emojis) {
+        const has = (item) => classes.includes(item);
+
+        // 1) 아무것도 없을 때
+        if (classes.length === 0) {
+          stageEl.innerHTML = `<div class="person-body" style="opacity: 0.4;">🫥</div>`;
+          sceneDescEl.textContent = "대기 중...";
+          return;
+        }
+
+        // 2) 사람이 감지된 경우 -> 모든 사물 자동 배치
+        if (has("person")) {
+          let backLayerHtml = ""; // z-index: 1 (뒤 배경)
+          let frontLayerHtml = ""; // z-index: 3 (손에 쥐거나 앞쪽 소품)
+          let sideLayerHtml = ""; // z-index: 3 (사이드/반려동물/소품)
+          let actions = [];
+
+          // 사람을 제외한 감지 사물 목록
+          const nonPersonClasses = classes.filter((c) => c !== "person");
+
+          // --- [1] 뒤쪽 배경 가구류 (Z-Index: 1) ---
+          const backItems = {
+            chair: "🪑",
+            couch: "🛋️",
+            bench: "🪑",
+            bed: "🛏️",
+          };
+          for (const [cls, emoji] of Object.entries(backItems)) {
+            if (has(cls)) {
+              backLayerHtml += `<div class="obj-back-chair">${emoji}</div>`;
+              actions.push(emoji);
+              break;
+            }
+          }
+
+          // 우산
+          if (has("umbrella")) {
+            backLayerHtml += `<div class="obj-back-umbrella">☂️</div>`;
+            actions.push("☂️");
+          }
+
+          // --- [2] 옆에 두는 소품 / 동물 (Z-Index: 3) ---
+          const petItems = {
+            dog: "🐶",
+            cat: "🐱",
+            bird: "🐦",
+            "teddy bear": "🧸",
+            horse: "🐴",
+            sheep: "🐑",
+            cow: "🐮",
+            elephant: "🐘",
+            bear: "🐻",
+            zebra: "🦓",
+            giraffe: "🦒",
+            "potted plant": "🪴",
+          };
+          for (const [cls, emoji] of Object.entries(petItems)) {
+            if (has(cls)) {
+              sideLayerHtml += `<div class="obj-side-pet">${emoji}</div>`;
+              actions.push(emoji);
+              break;
+            }
+          }
+
+          // --- [3] 손에 쥐거나 앞에 놓는 모든 소품/음식/도구 (가위 포함!) ---
+          // 노트북 (하단 중앙)
+          if (has("laptop")) {
+            frontLayerHtml += `<div class="obj-front-laptop">💻</div>`;
+            actions.push("💻");
+          }
+
+          // 왼손 / 오른손 슬롯에 사물 배치 (가위, 컵, 폰, 칫솔 등 모든 사물 수용)
+          const heldCandidates = nonPersonClasses.filter(
+            (c) =>
+              !backItems[c] &&
+              !petItems[c] &&
+              c !== "umbrella" &&
+              c !== "laptop",
+          );
+
+          if (heldCandidates.length > 0) {
+            // 첫 번째 손 소품 (왼쪽 손)
+            const item1 = heldCandidates[0];
+            const emoji1 = EMOJI_MAP[item1] || "📦";
+            frontLayerHtml += `<div class="obj-front-cup">${emoji1}</div>`;
+            actions.push(emoji1);
+
+            // 두 번째 손 소품 (오른쪽 손)
+            if (heldCandidates.length > 1) {
+              const item2 = heldCandidates[1];
+              const emoji2 = EMOJI_MAP[item2] || "📦";
+              frontLayerHtml += `<div class="obj-front-phone">${emoji2}</div>`;
+              actions.push(emoji2);
+            }
+          }
+
+          // [최종 레이어 합성]
+          stageEl.innerHTML = `
+                    ${backLayerHtml}
+                    <div class="person-body">👤</div>
+                    ${frontLayerHtml}
+                    ${sideLayerHtml}
+                `;
+
+          sceneDescEl.textContent =
+            actions.length > 0 ? `사람 + ${actions.join(" ")}` : "사람 인식됨";
+        }
+        // 3) 사물만 인식된 경우
+        else {
+          const itemEmojis = emojis.slice(0, 3).join(" ");
+          stageEl.innerHTML = `<div class="solo-item">${itemEmojis}</div>`;
+          sceneDescEl.textContent = `사물 감지됨 (${emojis.join(" ")})`;
+        }
+      }
+    </script>
+  </body>
+</html>
