@@ -11,7 +11,7 @@
     <div id="connection-status" class="status">서버 연결 대기 중...</div>
 
     <div class="container">
-      <!-- 🎭 버추얼 아바타 스테이지 영역 -->
+      <!-- 🎭 아바타 스테이지 영역 -->
       <div class="stage-card">
         <div class="stage-title">Cammoji Live Scene</div>
         <div id="avatar-stage" class="avatar-scene">
@@ -131,7 +131,7 @@
       const ws = new WebSocket(`ws://${location.host}/ws`);
 
       ws.onopen = () => {
-        statusEl.textContent = "🟢 버추얼 라이브 연동 중 (카메라 작동 중)";
+        statusEl.textContent = "🟢 캠모지 라이브 연동 중 (카메라 작동 중)";
         statusEl.className = "status connected";
       };
 
@@ -157,7 +157,7 @@
             .join("");
         }
 
-        // 2. 버추얼 아바타 씬 레이어 합성
+        // 2. 아바타 씬 레이어 합성
         renderAvatarScene(classes, emojis);
 
         // 3. 히스토리 로그 기록
