@@ -1,15 +1,33 @@
 # ✨ Cammoji (캠모지)
 
-> **"카메라 속 현실의 나와 사물을 가상 공간의 이모지 아바타로 실시간 동기화하다."**  
-> YOLO11 객체 인식과 WebSocket을 활용한 **실시간 인터랙티브 버추얼 아바타 스테이지**
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="90px">
+      <img src="./frontend/public/favicon.svg" width="70px" alt="Cammoji Favicon" />
+    </td>
+    <td>
+      <b>"카메라 속 현실의 나와 사물을 가상 공간의 이모지 아바타로 실시간 동기화하다."</b><br />
+      YOLO11 객체 인식과 WebSocket을 활용한 <b>실시간 인터랙티브 버추얼 아바타 스테이지</b>
+    </td>
+  </tr>
+</table>
 
 <br />
 
 ## 📖 프로젝트 소개 (진행 이유)
 
-복잡한 모션 캡처 장비나 무거운 3D 트래킹 툴 없이도, "**일반 웹캠 하나만으로 현실의 행동과 주변 사물을 가상 공간에 실시간으로 표현할 수 없을까?**"라는 아이디어에서 출발했습니다.
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="30%">
+      <img alt="cammoji_preview" src="https://github.com/user-attachments/assets/71f9f0b2-184c-4f5d-ae9a-cbe103449912" width="100%" alt="Cammoji Live Scene Preview" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);" />
+    </td>
+    <td width="55%">
+      복잡한 모션 캡처 장비나 무거운 3D 트래킹 툴 없이도, <b>"일반 웹캠 하나만으로 현실의 행동과 주변 사물을 가상 공간에 실시간으로 표현할 수 없을까?"</b>라는 아이디어에서 출발했습니다.<br /><br />
+      <b>Cammoji</b>는 웹캠을 통해 사용자와 주변 사물(의자, 컵, 스마트폰, 노트북, 반려동물 등)을 AI로 실시간 탐지하고, 이를 웹 대시보드 상에서 레이어링(Z-Index)된 <b>인터랙티브 이모지 아바타</b>로 즉각 변환하여 보여주는 프로젝트입니다.
+    </td>
+  </tr>
+</table>
 
-**Cammoji**는 웹캠을 통해 사용자와 주변 사물(의자, 컵, 스마트폰, 노트북, 반려동물 등)을 AI로 실시간 탐지하고, 이를 웹 대시보드 상에서 레이어링(Z-Index)된 **인터랙티브 이모지 아바타**로 즉각 변환하여 보여주는 프로젝트입니다.
 
 ---
 
