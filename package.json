@@ -1,0 +1,24 @@
+{
+  "name": "cammoji_project",
+  "version": "1.0.0",
+  "description": "캠모지프로젝트_yolo",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"cyan,magenta\" \"python backend/main.py\" \"npm run dev --prefix frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gjdbsdk/cammoji_project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gjdbsdk/cammoji_project/issues"
+  },
+  "homepage": "https://github.com/gjdbsdk/cammoji_project#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

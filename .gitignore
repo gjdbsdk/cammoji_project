@@ -2,3 +2,5 @@
 __pycache__/
 *.pt
 .DS_Store
+node_modules/
+dist/
